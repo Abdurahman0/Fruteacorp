@@ -1,5 +1,5 @@
 /* eslint-disable react/no-unescaped-entities */
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { toast } from 'react-toastify'
 
 function Login() {
@@ -10,6 +10,14 @@ function Login() {
 		phone: '+998',
 		password: '',
 	})
+
+	const [isAuthenticated, setIsAuthenticated] = useState(false) // Tracks authentication status
+
+	useEffect(() => {
+		// Check if the accessToken exists in localStorage
+		const token = localStorage.getItem('accessToken')
+		setIsAuthenticated(!!token)
+	}, [])
 
 	// Handles input changes
 	const handleChange = e => {
@@ -39,13 +47,12 @@ function Login() {
 
 			const result = await response.json()
 			if (response.ok) {
-				// Assuming the token is returned in result.token or result.data.token
 				const AccessToken = result.data.accessToken.token
 				const RefreshToken = result.data.refreshToken.token
 				if (AccessToken && RefreshToken) {
-					// Save the token to localStorage or sessionStorage
-					localStorage.setItem('accessToken', AccessToken) // or sessionStorage.setItem('authToken', token)
-					localStorage.setItem('refreshToken', RefreshToken) // or sessionStorage.setItem('authToken', token)
+					localStorage.setItem('accessToken', AccessToken)
+					localStorage.setItem('refreshToken', RefreshToken)
+					setIsAuthenticated(true) // Update state to hide the component
 					toast('Request successful!')
 				} else {
 					toast('No token received')
@@ -58,6 +65,9 @@ function Login() {
 			toast('Something went wrong!')
 		}
 	}
+
+	// If authenticated, hide the login component
+	if (isAuthenticated) return null
 
 	return (
 		<div className='flex items-center justify-center h-screen bg-gray-100'>
@@ -83,7 +93,6 @@ function Login() {
 				<form onSubmit={handleSubmit}>
 					{view === 'signup' && (
 						<>
-							{/* First Name */}
 							<div className='mb-4'>
 								<label
 									className='block text-sm font-medium mb-1'
@@ -101,7 +110,6 @@ function Login() {
 									required
 								/>
 							</div>
-							{/* Last Name */}
 							<div className='mb-4'>
 								<label
 									className='block text-sm font-medium mb-1'
@@ -122,7 +130,6 @@ function Login() {
 						</>
 					)}
 
-					{/* Phone */}
 					<div className='mb-4'>
 						<label className='block text-sm font-medium mb-1' htmlFor='phone'>
 							Tel:
@@ -138,7 +145,6 @@ function Login() {
 						/>
 					</div>
 
-					{/* Password */}
 					{view !== 'forgot' && (
 						<div className='mb-6'>
 							<label
@@ -159,7 +165,6 @@ function Login() {
 						</div>
 					)}
 
-					{/* Submit Button */}
 					<button
 						type='submit'
 						className='w-full bg-green-500 text-white font-bold py-2 px-4 rounded-md hover:bg-green-600'
@@ -172,7 +177,6 @@ function Login() {
 					</button>
 				</form>
 
-				{/* Footer Links */}
 				<div className='mt-4 text-center'>
 					{view === 'login' && (
 						<>
