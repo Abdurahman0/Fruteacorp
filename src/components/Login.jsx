@@ -1,9 +1,11 @@
 /* eslint-disable react/no-unescaped-entities */
 import { useState, useEffect } from 'react'
+import { useNavigate } from 'react-router-dom'
 import { toast } from 'react-toastify'
 
 function Login() {
 	const [view, setView] = useState('login') // Tracks the current view: 'login', 'signup', 'forgot'
+	const navigate = useNavigate()
 	const [formData, setFormData] = useState({
 		firstName: '',
 		lastName: '',
@@ -54,6 +56,7 @@ function Login() {
 					localStorage.setItem('refreshToken', RefreshToken)
 					setIsAuthenticated(true) // Update state to hide the component
 					toast('Request successful!')
+					navigate("/about")
 				} else {
 					toast('No token received')
 				}

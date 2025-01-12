@@ -3,9 +3,8 @@ import Login from '../components/Login'
 function Main() {
 	return (
 		<div>
-			Main
 			<div>
-				<Login />
+					<Login /> 
 			</div>
 		</div>
 	)
