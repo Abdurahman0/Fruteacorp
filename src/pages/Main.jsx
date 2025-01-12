@@ -2,11 +2,13 @@ import Login from '../components/Login'
 
 function Main() {
 	return (
-		<div>
-			<div>
+		<>
+             wexfwef
+         
+
+
 					<Login /> 
-			</div>
-		</div>
+		</>
 	)
 }
 

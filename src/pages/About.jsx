@@ -1,7 +1,5 @@
-import Home from "../components/Home"
-
 function About() {
-	return <div><Home/></div>
+	return <div>About</div>
 }
 
 export default About
