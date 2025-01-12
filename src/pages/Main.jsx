@@ -1,9 +1,14 @@
 import Login from '../components/Login'
 
 function Main() {
+	const accessToken = localStorage.getItem('accessToken')
+
 	return (
 		<div>
-			<Login />
+			Main
+			<div className={accessToken && 'hidden'}>
+				<Login />
+			</div>
 		</div>
 	)
 }
