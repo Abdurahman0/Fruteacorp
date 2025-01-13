@@ -2,6 +2,9 @@ import { useEffect, useState } from "react";
 import logo from "../assets/img/logo.png";
 import { FiSearch } from "react-icons/fi";
 import { GiSelfLove } from "react-icons/gi";
+import { BsBagPlus } from "react-icons/bs";
+import { IoIosSearch } from "react-icons/io";
+import { FaRegUser } from "react-icons/fa";
 
 function MainComponent() {
   const [activeIndex, setActiveIndex] = useState(null);
@@ -18,11 +21,11 @@ function MainComponent() {
   ];
 
   const navItems = [
-    { href: "/", label: "sahifa" },
-    { href: "/category", label: "catalog icon" },
-    { href: "/cart", label: "avar icon" },
-    { href: "/wishes", label: "saralanganlar icon" },
-    { label: "user icon", isButton: true },
+    { href: "/", label: "Sahifa", icon: null },
+    { href: "/category", label: "Catalog", icon: <IoIosSearch /> },
+    { href: "/cart", label: "Savat", icon: <BsBagPlus /> },
+    { href: "/wishes", label: "Saralanganlar", icon: <GiSelfLove /> },
+    { label: "User", icon: <FaRegUser />, isButton: true },
   ];
 
   useEffect(() => {
@@ -78,7 +81,7 @@ function MainComponent() {
         <div className="block lg:hidden">
           <div className="fixed bottom-0 z-[99] py-[10px] w-full bg-white border-t border-t-[rgba(54, 55, 64, .8)]">
             <nav className="container">
-              <ul className="flex">
+              <ul className="flex items-center">
                 {navItems.map((item, index) => (
                   <li
                     key={index}
@@ -93,7 +96,8 @@ function MainComponent() {
                             : "text-[#7e818c]"
                         }`}
                       >
-                        {item.label}
+                        {item.icon}
+                        <span>{item.label}</span>
                       </button>
                     ) : (
                       <a
@@ -105,7 +109,8 @@ function MainComponent() {
                             : "text-[#7e818c]"
                         }`}
                       >
-                        {item.label}
+                        {item.icon}
+                        <span>{item.label}</span>
                       </a>
                     )}
                   </li>
