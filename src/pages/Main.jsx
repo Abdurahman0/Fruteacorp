@@ -3,19 +3,10 @@ import MainComponent from '../components/MainComponent'
 
 function Main() {
 	return (
-<<<<<<< HEAD
-		<div>
-			Main
-			<div>
-				<Login />
-			</div>
-		</div>
-=======
 		<>
-		<MainComponent/>
-					<Login /> 
+			<MainComponent />
+			<Login />
 		</>
->>>>>>> origin/rasuljon
 	)
 }
 
