@@ -1,11 +1,12 @@
 import { useEffect, useState } from "react";
 import logo from "../assets/img/logo.png";
 import { FiSearch } from "react-icons/fi";
+import { GiSelfLove } from "react-icons/gi";
 
 function MainComponent() {
   const [activeIndex, setActiveIndex] = useState(null);
   const [data, setData] = useState(null);
-  const [selectid, setSelectedId] = useState(null);
+  //   const [selectid, setSelectedId] = useState(null);
 
   const flags = (i) => {
     console.log(i);
@@ -28,25 +29,29 @@ function MainComponent() {
   useEffect(() => {
     fetch("https://api.fruteacorp.uz/products?page=1&limit=8", {
       method: "GET",
-      headers: { 'Content-Type': 'application/json' }
+      headers: { "Content-Type": "application/json" },
     })
       .then((res) => res.json())
       .then((elem) => {
-        setData(elem); 
+        setData(elem);
       })
       .catch((err) => {
-        console.error("Error fetching data:", err);  
+        console.error("Error fetching data:", err);
       });
-  }, []); 
+  }, []);
 
   useEffect(() => {
-    console.log(data?.data); 
+    console.log(data?.data);
   }, [data]);
 
-  console.log(selectid ? selectid : null )
+  //   console.log(selectid ? selectid : null )
 
-  const a = (id) => {
-    setSelectedId(id);
+  const handleClick = (id, type) => {
+    if (type === "love") {
+      console.log("Love ID:", id);
+    } else if (type === "add") {
+      console.log("Add ID:", id);
+    }
   };
 
   return (
@@ -82,7 +87,10 @@ function MainComponent() {
             <nav className="container">
               <ul className="flex">
                 {navItems.map((item, index) => (
-                  <li key={index} className="w-[20%] h-[30%] flex justify-center">
+                  <li
+                    key={index}
+                    className="w-[20%] h-[30%] flex justify-center"
+                  >
                     {item.isButton ? (
                       <button
                         onClick={() => setActiveIndex(index)}
@@ -165,7 +173,18 @@ function MainComponent() {
                       />
                     </div>
                   ))}
-                  <button onClick={() => a(item.id)}>click</button>
+                  <button
+                    onClick={() => handleClick(item.id, "love")}
+                    type="love"
+                  >
+                    <GiSelfLove />
+                  </button>
+                  <button
+                    onClick={() => handleClick(item.id, "add")}
+                    type="add"
+                  >
+                    Click
+                  </button>
                 </div>
               ))}
             </div>
@@ -177,4 +196,3 @@ function MainComponent() {
 }
 
 export default MainComponent;
-
