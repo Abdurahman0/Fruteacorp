@@ -6,7 +6,6 @@ import { GiSelfLove } from "react-icons/gi";
 function MainComponent() {
   const [activeIndex, setActiveIndex] = useState(null);
   const [data, setData] = useState(null);
-  //   const [selectid, setSelectedId] = useState(null);
 
   const flags = (i) => {
     console.log(i);
@@ -39,12 +38,6 @@ function MainComponent() {
         console.error("Error fetching data:", err);
       });
   }, []);
-
-  useEffect(() => {
-    console.log(data?.data);
-  }, [data]);
-
-  //   console.log(selectid ? selectid : null )
 
   const handleClick = (id, type) => {
     if (type === "love") {
