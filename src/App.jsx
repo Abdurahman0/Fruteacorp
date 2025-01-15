@@ -1,5 +1,5 @@
 import { ToastContainer } from 'react-toastify'
-import { Route, Routes, Navigate, useNavigate } from 'react-router-dom'
+import { Route, Routes } from 'react-router-dom'
 import About from './pages/About'
 import Cart from './pages/Cart'
 import Faq from './pages/Faq'
