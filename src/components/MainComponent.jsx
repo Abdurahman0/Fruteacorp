@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import { useEffect, useState } from "react";
 import logo from "../assets/img/logo.png";
 import { FiSearch } from "react-icons/fi";
@@ -6,10 +7,20 @@ import { BsBagPlus } from "react-icons/bs";
 import { IoIosSearch } from "react-icons/io";
 import { FaRegUser } from "react-icons/fa";
 import { BiCategoryAlt } from "react-icons/bi";
+import 'swiper/css';
+import 'swiper/css/navigation';
+import 'swiper/css/pagination';
+import 'swiper/css/autoplay';
+import { Swiper, SwiperSlide } from "swiper/react";
+import { Navigation, Pagination, Autoplay } from 'swiper/modules';
 
 function MainComponent() {
   const [activeIndex, setActiveIndex] = useState(null);
   const [data, setData] = useState(null);
+  const [baner, setBaner] = useState(null);
+  const [limit, setLimit] = useState(10);
+  const [loading, setLoading] = useState(false);
+
 
   const flags = (i) => {
     console.log(i);
@@ -29,8 +40,10 @@ function MainComponent() {
     { label: "User", icon: <FaRegUser />, isButton: true },
   ];
 
-  useEffect(() => {
-    fetch("https://api.fruteacorp.uz/products?page=1&limit=8", {
+
+  const fetchData = () => {
+    setLoading(true); 
+    fetch(`https://api.fruteacorp.uz/products?page=1&limit=${limit}`, {
       method: "GET",
       headers: { "Content-Type": "application/json" },
     })
@@ -40,8 +53,23 @@ function MainComponent() {
       })
       .catch((err) => {
         console.error("Error fetching data:", err);
-      });
-  }, []);
+      })
+      .finally(() => setLoading(false)); 
+  };
+
+  useEffect(()=>{
+   fetch(`https://api.fruteacorp.uz/banner`,{
+    method:"GEt",
+    headers: { "Content-Type": "application/json" },
+   }).then((res) => res.json())
+   .then((elem)=> setBaner(elem?.data))
+  },[])
+  
+  const handleLimitChange = () => {
+      if (limit !== 50) {
+        setLimit(50); // Limitni 50 ga o'rnatish
+      }
+  };
 
   const handleClick = (id, type) => {
     if (type === "love") {
@@ -50,6 +78,9 @@ function MainComponent() {
       console.log("Add ID:", id);
     }
   };
+  useEffect(() => {
+    fetchData();
+  }, [limit]);
 
   return (
     <>
@@ -162,7 +193,6 @@ function MainComponent() {
               </a>
               <div className="relative h-full ">
                 <button className="flex items-center transition-all duration-200 bg-green-200 hover:bg-green-400 px-[16px] h-full font-medium gap-2 text-[14px] rounded-[4px] text-green-600">
-                  {" "}
                   <BiCategoryAlt />
                   catalog
                 </button>
@@ -222,36 +252,94 @@ function MainComponent() {
 
       <main className="pt-20 sm:pt-24 lg:py-10">
         <div className="container">
-          <section className="mt-5 md:mt-8 xl:mt-16">
+          <div className="container relative">
+         <Swiper
+modules={[Navigation, Pagination, Autoplay]}
+navigation
+pagination={{ clickable: true }}
+autoplay={{ delay: 3000, disableOnInteraction: false }}
+loop
+spaceBetween={20}
+slidesPerView={1}
+>
+ {baner?.map((item, index) => (
+   <SwiperSlide key={index}>
+     <img
+       src={`https://api.fruteacorp.uz/images/${item.image}`}
+       alt={`Banner ${index + 1}`}
+       style={{ width: "100%", height: "70%" }}
+     />
+   </SwiperSlide>
+ ))}
+</Swiper>
+          </div>
+          <section className="mb-[3.5rem] md:mt-8 xl:mt-16">
             <h2 className="text-[20px] md:text-[24px] xl:text-[28px] capitalize font-semibold font-inter mb-5">
               <a href="/products">Mahsulotlar</a>
             </h2>
             <div className="grid grid-cols-2 sm:grid-cols-3 xl:grid-cols-5 md:grid-cols-4 gap-y-4 gap-x-4 mb-10">
               {data?.data?.map((item, i) => (
-                <div className="" key={i}>
-                  {item?.images?.map((imageItem, key) => (
-                    <div key={key}>
-                      <img
-                        src={`https://api.fruteacorp.uz/images/${imageItem.image.name}`}
-                        alt=""
-                      />
-                    </div>
-                  ))}
-                  <button
-                    onClick={() => handleClick(item.id, "love")}
-                    type="love"
-                  >
-                    <GiSelfLove />
-                  </button>
-                  <button
-                    onClick={() => handleClick(item.id, "add")}
-                    type="add"
-                  >
-                    Click
-                  </button>
-                </div>
+             <article
+             className="relative rounded-[20px] overflow-hidden pb-4 border border-green-400 shadow-sm hover:shadow-lg hover:shadow-green-400 transition-all duration-300 ease-in-out"
+             key={i}
+           >
+             <div className="absolute top-4 right-4 cursor-pointer active:scale-110 text-[20px] z-20"></div>
+             <span
+               className="absolute top-4 right-4 cursor-pointer active:scale-110 text-[20px] z-20"
+               onClick={() => handleClick(item.id, "love")}
+             >
+               <GiSelfLove />
+             </span>
+             {item?.images?.map((imageItem, key) => (
+               <a href="/" className="select-none bg-[#efefef]" key={key}>
+                 <div className="mb-2 bg-[#efefef]">
+                   <img className="w-full object-contain aspect-[4/5.25] max-h-[350px] block"
+                     src={`https://api.fruteacorp.uz/images/${imageItem.image.name}`}
+                     alt="img"
+                   />
+                 </div>
+                 <div className="px-2 text-gray-800 font-inter flex flex-col justify-between h-[100px] ss:h-[120px]">
+                   <div>
+                     <h4 className="text-[12.8px] max-h-[43px] overflow-hidden mb-1">
+                       namatak
+                     </h4>
+                     <p className="text-[11.2px] flex items-center gap-x-1 text-gray-500">
+                       <span className="text-[#ffb54c]">23452t4v3rewgc</span>
+                     </p>
+                   </div>
+                   <div className="flex justify-between items-end gap-x-5">
+                     <p className="text-[12px] ms:text-[14px] ss:text-[16px]">30000 som</p>
+                   </div>
+                 </div>
+               </a>
+             ))}
+             <button onClick={() => handleClick(item.id, "add")} type="add">
+               Click
+             </button>
+           </article>
+           
               ))}
             </div>
+            {limit !== 50 && !loading && (
+              <div className="flex justify-center">
+                 <button
+                  onClick={handleLimitChange}
+                  className="rounded-[8px] text-gray-800 font-inter font-semibold py-[7px] px-[40px] transition-all duration-[350ms] ease-[cubic-bezier(0.4,_0,_0.2,_1)] bg-green-400 hover:bg-green-600 hover:text-white transform hover:scale-105"
+                >
+                  Load More
+                </button>
+              </div>
+              )}
+              {loading && (
+                <div className="flex justify-center">
+                  <button
+                  disabled
+                  className="rounded-[8px] text-gray-800 font-inter font-semibold py-[7px] px-[40px] transition-all duration-[350ms] ease-[cubic-bezier(0.4,_0,_0.2,_1)] bg-gray-400 cursor-not-allowed"
+                >
+                  Loading...
+                </button>
+                </div>
+              )}
           </section>
         </div>
       </main>
