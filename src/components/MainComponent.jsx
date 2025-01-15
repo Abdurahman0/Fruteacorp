@@ -39,11 +39,65 @@ function MainComponent() {
       });
   }, []);
 
-  const handleClick = (id, type) => {
+  const handleClick = async (id, type) => {
+    const token = localStorage.getItem("accessToken");
+
+    console.log("Token:", token);
+    
+    if (!token) {
+      console.error("User is not authenticated.");
+      alert("Please log in to manage your wishlist.");
+      return;
+    }
+
     if (type === "love") {
-      console.log("Love ID:", id);
+      try {
+        const response = await fetch("https://api.fruteacorp.uz/wishlist", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+          body: JSON.stringify({ productId: id }),
+        });
+
+        if (!response.ok) {
+          throw new Error(`HTTP error! Status: ${response.status}`);
+        }
+
+        const result = await response.json();
+        console.log("Wishlist updated:", result);
+        alert("Wishlist updated successfully!");
+      } catch (error) {
+        console.error("Error updating wishlist:", error);
+        alert("An error occurred. Please try again later.");
+      }
     } else if (type === "add") {
-      console.log("Add ID:", id);
+      try {
+        const response = await fetch("https://api.fruteacorp.uz/cart/add", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+          body: JSON.stringify({
+            productId: id,
+            count: 1,  // Add the desired count of the product here (e.g., 1)
+          }),
+        });
+
+        if (!response.ok) {
+          const errorData = await response.json();
+          throw new Error(`HTTP error! Status: ${response.status} - ${errorData.message || "Unknown error"}`);
+        }
+
+        const result = await response.json();
+        console.log("Product added to cart:", result);
+        alert("Product added to cart successfully!");
+      } catch (error) {
+        console.error("Error adding product to cart:", error);
+        alert(`An error occurred: ${error.message}`);
+      }
     }
   };
 

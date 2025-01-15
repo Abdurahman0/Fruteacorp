@@ -49,21 +49,31 @@ const Wishes = () => {
     fetchWishlist();
   }, [fetchWishlist]);
 
-  const toggleLike = async (id) => {
-    setWishes((prev) => prev.filter((wish) => wish.id !== id));
+ const toggleLike = async (id) => {
+  setWishes((prev) => prev.filter((wish) => wish.id !== id));
 
-    try {
-      await fetch(`https://api.fruteacorp.uz/wishlist/${id}`, {
-        method: "DELETE",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-      });
-    } catch (err) {
-      console.error("Failed to update wishlist:", err);
+  try {
+    const response = await fetch("https://api.fruteacorp.uz/wishlist", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify({ productId: id }),
+    });
+
+    if (!response.ok) {
+      throw new Error(`Failed to update wishlist. Status: ${response.status}`);
     }
-  };
+
+    console.log("Item removed from wishlist successfully.");
+  } catch (err) {
+    console.error("Failed to update wishlist:", err);
+   
+    setWishes((prev) => [...prev, wishes.find((wish) => wish.id === id)]);
+  }
+};
+
 
   if (loading) return <div className="loader">Loading...</div>;
   if (error) return <p className="text-red-500">{error}</p>;
