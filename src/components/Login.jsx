@@ -34,10 +34,10 @@ function Login() {
 		try {
 			const endpoint =
 				view === 'signup'
-					? 'https://api.fruteacorp.uz/auth/signup'
+					? 'http://209.38.30.188:8347/auth/signup'
 					: view === 'forgot'
-					? 'https://api.fruteacorp.uz/auth/send-sms'
-					: 'https://api.fruteacorp.uz/auth/signin'
+					? 'http://209.38.30.188:8347/auth/send-sms'
+					: 'http://209.38.30.188:8347/auth/signin'
 
 			const response = await fetch(endpoint, {
 				method: 'POST',

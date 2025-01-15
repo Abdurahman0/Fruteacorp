@@ -1,13 +1,12 @@
 import Login from '../components/Login'
+import MainComponent from '../components/MainComponent'
 
 function Main() {
 	return (
-		<div>
-			Main
-			<div>
-				<Login />
-			</div>
-		</div>
+		<>
+			<MainComponent />
+			<Login />
+		</>
 	)
 }
 

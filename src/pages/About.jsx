@@ -1,3 +1,4 @@
+import Home from '../components/Home'
 import img1 from '../about-imgs/about1.jpg'
 import img2 from '../about-imgs/about2.jpg'
 
@@ -73,8 +74,8 @@ function About() {
 				</div>
 
 			</div>
+			<Home />
 		</div>
-		
 	)
 }
 
