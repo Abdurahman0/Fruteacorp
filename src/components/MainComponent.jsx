@@ -13,12 +13,17 @@ import 'swiper/css/pagination';
 import 'swiper/css/autoplay';
 import { Swiper, SwiperSlide } from "swiper/react";
 import { Navigation, Pagination, Autoplay } from 'swiper/modules';
+import { useNavigate } from "react-router";
+
 
 function MainComponent() {
+  const navigate = useNavigate()
   const [activeIndex, setActiveIndex] = useState(null);
   const [data, setData] = useState(null);
   const [baner, setBaner] = useState(null);
   const [limit, setLimit] = useState(10);
+  const [category, setCategory] = useState([]);
+
   const [loading, setLoading] = useState(false);
 
 
@@ -42,7 +47,7 @@ function MainComponent() {
 
 
   const fetchData = () => {
-    setLoading(true); 
+    setLoading(true);
     fetch(`https://api.fruteacorp.uz/products?page=1&limit=${limit}`, {
       method: "GET",
       headers: { "Content-Type": "application/json" },
@@ -54,21 +59,21 @@ function MainComponent() {
       .catch((err) => {
         console.error("Error fetching data:", err);
       })
-      .finally(() => setLoading(false)); 
+      .finally(() => setLoading(false));
   };
 
-  useEffect(()=>{
-   fetch(`https://api.fruteacorp.uz/banner`,{
-    method:"GEt",
-    headers: { "Content-Type": "application/json" },
-   }).then((res) => res.json())
-   .then((elem)=> setBaner(elem?.data))
-  },[])
-  
+  useEffect(() => {
+    fetch(`https://api.fruteacorp.uz/banner`, {
+      method: "GEt",
+      headers: { "Content-Type": "application/json" },
+    }).then((res) => res.json())
+      .then((elem) => setBaner(elem?.data))
+  }, [])
+
   const handleLimitChange = () => {
-      if (limit !== 50) {
-        setLimit(50); // Limitni 50 ga o'rnatish
-      }
+    if (limit !== 50) {
+      setLimit(50); // Limitni 50 ga o'rnatish
+    }
   };
 
   const handleClick = (id, type) => {
@@ -81,6 +86,18 @@ function MainComponent() {
   useEffect(() => {
     fetchData();
   }, [limit]);
+
+
+  useEffect(() => {
+    fetch(`https://api.fruteacorp.uz/categories`, {
+      method: "get",
+      headers: { "Content-Type": "application/json" },
+    }).then((res) => res.json())
+      .then((data) => setCategory(data?.data))
+  }, [])
+
+
+
 
   return (
     <>
@@ -113,7 +130,7 @@ function MainComponent() {
         <div className="block lg:hidden">
           <div className="fixed bottom-0 z-[99] py-[10px] w-full bg-white border-t border-t-[rgba(54, 55, 64, .8)]">
             <nav className="container">
-              <ul className="flex items-center">
+              <ul className="flex">
                 {navItems.map((item, index) => (
                   <li
                     key={index}
@@ -122,11 +139,10 @@ function MainComponent() {
                     {item.isButton ? (
                       <button
                         onClick={() => setActiveIndex(index)}
-                        className={`flex flex-col items-center ss:text-[14px] ms:text-[12px] text-[10px] ss:font-medium gap-1 ${
-                          activeIndex === index
-                            ? "text-custom-green-600"
-                            : "text-[#7e818c]"
-                        }`}
+                        className={`flex flex-col items-center ss:text-[14px] ms:text-[12px] text-[10px] ss:font-medium gap-1 ${activeIndex === index
+                          ? "text-custom-green-600"
+                          : "text-[#7e818c]"
+                          }`}
                       >
                         {item.icon}
                         <span>{item.label}</span>
@@ -135,11 +151,10 @@ function MainComponent() {
                       <a
                         href={item.href}
                         onClick={() => setActiveIndex(index)}
-                        className={`flex flex-col items-center ss:text-[14px] ms:text-[12px] text-[10px] ss:font-medium gap-1 ${
-                          activeIndex === index
-                            ? "text-custom-green-600"
-                            : "text-[#7e818c]"
-                        }`}
+                        className={`flex flex-col items-center ss:text-[14px] ms:text-[12px] text-[10px] ss:font-medium gap-1 ${activeIndex === index
+                          ? "text-custom-green-600"
+                          : "text-[#7e818c]"
+                          }`}
                       >
                         {item.icon}
                         <span>{item.label}</span>
@@ -153,6 +168,7 @@ function MainComponent() {
 
           <div className="fixed top-0 py-[7px] w-full bg-white z-[90]">
             <div className="container">
+
               <div className="flex items-center justify-between mb-[5px]">
                 <a href="/" className="w-[200px] cursor-pointer">
                   <img src={logo} className="sm:h-[30px] h-[20px]" alt="logo" />
@@ -192,10 +208,24 @@ function MainComponent() {
                 <img className="h-[40px]" src={logo} alt="logo" />
               </a>
               <div className="relative h-full ">
-                <button className="flex items-center transition-all duration-200 bg-green-200 hover:bg-green-400 px-[16px] h-full font-medium gap-2 text-[14px] rounded-[4px] text-green-600">
-                  <BiCategoryAlt />
-                  catalog
-                </button>
+                <select
+                  className="flex items-center transition-all duration-200 bg-green-200 hover:bg-green-400 px-[16px] h-full font-medium gap-2 text-[14px] rounded-[4px] text-black"
+                  onChange={(e) => {
+                    const selectedCategoryId = e.target.value;
+                    if (selectedCategoryId) {
+                      navigate(`/products/${selectedCategoryId}`); // id bo'yicha mahsulotlar sahifasiga yo'naltirish
+                    }
+                  }}
+                >
+                  <option value="">Katalog</option>
+                  {category?.map((item) => (
+                    <option key={item.id} value={item.id}> {/* id ni value sifatida berish */}
+                      {item.title_uz}
+                    </option>
+                  ))}
+                </select>
+
+
                 {/* <div className="absolute z-50 top-[50px] transition-all duration-300 hidden">
                     <ul className="p-[20px] bg-[#fff] border border-custom-green-600 opacity-[0.95] rounded-[10px] flex flex-col gap-2">
 
@@ -253,25 +283,25 @@ function MainComponent() {
       <main className="pt-20 sm:pt-24 lg:py-10">
         <div className="container">
           <div className="container relative">
-         <Swiper
-modules={[Navigation, Pagination, Autoplay]}
-navigation
-pagination={{ clickable: true }}
-autoplay={{ delay: 3000, disableOnInteraction: false }}
-loop
-spaceBetween={20}
-slidesPerView={1}
->
- {baner?.map((item, index) => (
-   <SwiperSlide key={index}>
-     <img
-       src={`https://api.fruteacorp.uz/images/${item.image}`}
-       alt={`Banner ${index + 1}`}
-       style={{ width: "100%", height: "70%" }}
-     />
-   </SwiperSlide>
- ))}
-</Swiper>
+            <Swiper
+              modules={[Navigation, Pagination, Autoplay]}
+              navigation
+              pagination={{ clickable: true }}
+              autoplay={{ delay: 3000, disableOnInteraction: false }}
+              loop
+              spaceBetween={20}
+              slidesPerView={1}
+            >
+              {baner?.map((item, index) => (
+                <SwiperSlide key={index}>
+                  <img
+                    src={`https://api.fruteacorp.uz/images/${item.image}`}
+                    alt={`Banner ${index + 1}`}
+                    style={{ width: "100%", height: "70%" }}
+                  />
+                </SwiperSlide>
+              ))}
+            </Swiper>
           </div>
           <section className="mb-[3.5rem] md:mt-8 xl:mt-16">
             <h2 className="text-[20px] md:text-[24px] xl:text-[28px] capitalize font-semibold font-inter mb-5">
@@ -279,67 +309,67 @@ slidesPerView={1}
             </h2>
             <div className="grid grid-cols-2 sm:grid-cols-3 xl:grid-cols-5 md:grid-cols-4 gap-y-4 gap-x-4 mb-10">
               {data?.data?.map((item, i) => (
-             <article
-             className="relative rounded-[20px] overflow-hidden pb-4 border border-green-400 shadow-sm hover:shadow-lg hover:shadow-green-400 transition-all duration-300 ease-in-out"
-             key={i}
-           >
-             <div className="absolute top-4 right-4 cursor-pointer active:scale-110 text-[20px] z-20"></div>
-             <span
-               className="absolute top-4 right-4 cursor-pointer active:scale-110 text-[20px] z-20"
-               onClick={() => handleClick(item.id, "love")}
-             >
-               <GiSelfLove />
-             </span>
-             {item?.images?.map((imageItem, key) => (
-               <a href="/" className="select-none bg-[#efefef]" key={key}>
-                 <div className="mb-2 bg-[#efefef]">
-                   <img className="w-full object-contain aspect-[4/5.25] max-h-[350px] block"
-                     src={`https://api.fruteacorp.uz/images/${imageItem.image.name}`}
-                     alt="img"
-                   />
-                 </div>
-                 <div className="px-2 text-gray-800 font-inter flex flex-col justify-between h-[100px] ss:h-[120px]">
-                   <div>
-                     <h4 className="text-[12.8px] max-h-[43px] overflow-hidden mb-1">
-                       namatak
-                     </h4>
-                     <p className="text-[11.2px] flex items-center gap-x-1 text-gray-500">
-                       <span className="text-[#ffb54c]">23452t4v3rewgc</span>
-                     </p>
-                   </div>
-                   <div className="flex justify-between items-end gap-x-5">
-                     <p className="text-[12px] ms:text-[14px] ss:text-[16px]">30000 som</p>
-                   </div>
-                 </div>
-               </a>
-             ))}
-             <button onClick={() => handleClick(item.id, "add")} type="add">
-               Click
-             </button>
-           </article>
-           
+                <article
+                  className="relative rounded-[20px] overflow-hidden pb-4 border border-green-400 shadow-sm hover:shadow-lg hover:shadow-green-400 transition-all duration-300 ease-in-out"
+                  key={i}
+                >
+                  <div className="absolute top-4 right-4 cursor-pointer active:scale-110 text-[20px] z-20"></div>
+                  <span
+                    className="absolute top-4 right-4 cursor-pointer active:scale-110 text-[20px] z-20"
+                    onClick={() => handleClick(item.id, "love")}
+                  >
+                    <GiSelfLove />
+                  </span>
+                  {item?.images?.map((imageItem, key) => (
+                    <a href="/" className="select-none bg-[#efefef]" key={key}>
+                      <div className="mb-2 bg-[#efefef]">
+                        <img className="w-full object-contain aspect-[4/5.25] max-h-[350px] block"
+                          src={`https://api.fruteacorp.uz/images/${imageItem.image.name}`}
+                          alt="img"
+                        />
+                      </div>
+                      <div className="px-2 text-gray-800 font-inter flex flex-col justify-between h-[100px] ss:h-[120px]">
+                        <div>
+                          <h4 className="text-[12.8px] max-h-[43px] overflow-hidden mb-1">
+                            namatak
+                          </h4>
+                          <p className="text-[11.2px] flex items-center gap-x-1 text-gray-500">
+                            <span className="text-[#ffb54c]">23452t4v3rewgc</span>
+                          </p>
+                        </div>
+                        <div className="flex justify-between items-end gap-x-5">
+                          <p className="text-[12px] ms:text-[14px] ss:text-[16px]">30000 som</p>
+                        </div>
+                      </div>
+                    </a>
+                  ))}
+                  <button onClick={() => handleClick(item.id, "add")} type="add">
+                    Click
+                  </button>
+                </article>
+
               ))}
             </div>
             {limit !== 50 && !loading && (
               <div className="flex justify-center">
-                 <button
+                <button
                   onClick={handleLimitChange}
                   className="rounded-[8px] text-gray-800 font-inter font-semibold py-[7px] px-[40px] transition-all duration-[350ms] ease-[cubic-bezier(0.4,_0,_0.2,_1)] bg-green-400 hover:bg-green-600 hover:text-white transform hover:scale-105"
                 >
                   Load More
                 </button>
               </div>
-              )}
-              {loading && (
-                <div className="flex justify-center">
-                  <button
+            )}
+            {loading && (
+              <div className="flex justify-center">
+                <button
                   disabled
                   className="rounded-[8px] text-gray-800 font-inter font-semibold py-[7px] px-[40px] transition-all duration-[350ms] ease-[cubic-bezier(0.4,_0,_0.2,_1)] bg-gray-400 cursor-not-allowed"
                 >
                   Loading...
                 </button>
-                </div>
-              )}
+              </div>
+            )}
           </section>
         </div>
       </main>

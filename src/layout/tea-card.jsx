@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { ProductCard } from "../components/product-card";
 
-function Products() {
+ export function TeaCard () {
   const [products, setProducts] = useState([]);
 
   useEffect(() => {
@@ -24,5 +24,3 @@ function Products() {
     </div>
   );
 }
-
-export default Products;
