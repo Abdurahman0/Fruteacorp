@@ -70,14 +70,68 @@ function MainComponent() {
         setLimit(50); // Limitni 50 ga o'rnatish
       }
   };
-
+  
   const handleClick = (id, type) => {
-    if (type === "love") {
-      console.log("Love ID:", id);
-    } else if (type === "add") {
-      console.log("Add ID:", id);
-    }
-  };
+  if (type === "love") {
+    console.log("Love ID:", id);
+
+   
+     const token = localStorage.getItem('accessToken');  
+
+    fetch('https://api.fruteacorp.uz/wishlist', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`,  
+      },
+      body: JSON.stringify({
+        productId: id,  
+      }),
+    })
+      .then((response) => {
+        if (!response.ok) {
+          throw new Error('Failed to add to wishlist');
+        }
+        return response.json();
+      })
+      .then((data) => {
+        console.log('Success:', data);
+      })
+      .catch((error) => {
+        console.error('Error:', error);
+      });
+  } else if (type === "add") {
+    console.log("Add ID:", id);
+  }
+};
+const handleAddToCart = (productId, count) => {
+  const token = localStorage.getItem('accessToken');  // Tokenni olish
+
+  fetch('https://api.fruteacorp.uz/cart/add', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${token}`,  // Tokenni yuborish
+    },
+    body: JSON.stringify({
+      productId: productId,  // Mahsulot ID'si
+      count: count,  // Mahsulot miqdori
+    }),
+  })
+    .then((response) => {
+      if (!response.ok) {
+        throw new Error('Failed to add to cart');
+      }
+      return response.json();
+    })
+    .then((data) => {
+      console.log('Success:', data);
+    })
+    .catch((error) => {
+      console.error('Error:', error);
+    });
+};
+
   useEffect(() => {
     fetchData();
   }, [limit]);
@@ -313,7 +367,7 @@ slidesPerView={1}
                  </div>
                </a>
              ))}
-             <button onClick={() => handleClick(item.id, "add")} type="add">
+             <button onClick={() => handleAddToCart(item.id, 1)} type="add">
                Click
              </button>
            </article>

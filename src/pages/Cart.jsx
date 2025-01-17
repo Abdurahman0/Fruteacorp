@@ -1,10 +1,10 @@
-<<<<<<< Updated upstream
-function Cart() {
-	return <div>Cart</div>
-=======
+
 import { useEffect, useState } from "react";
 import { CiTrash } from "react-icons/ci";
-
+import NoData from './img/not-product-Bbj56LVh.png';
+import { Link } from "react-router-dom";
+import Nav from "../components/nav/Nav";
+import NavTop from "../components/nav/NavTop";
 function Cart() {
   const [cartItems, setCartItems] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -55,7 +55,29 @@ function Cart() {
       alert("Mahsulotni savatchaga qo'shishda xatolik yuz berdi.");
     }
   };
-
+  
+  const handleRemoveAllFromCart = async (productId) => {
+    try {
+      const response = await fetch("https://api.fruteacorp.uz/cart/remove", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
+        },
+        body: JSON.stringify({ productId, count: 50 }), // count = 0 barcha mahsulotlarni o'chiradi
+      });
+  
+      if (!response.ok) {
+        throw new Error(`HTTP error! Status: ${response.status}`);
+      }
+  
+      fetchCart(); // Savatni yangilash uchun qayta yuklanadi
+    } catch (error) {
+      console.error("Error removing all products from cart:", error);
+      alert("Mahsulotni savatdan o'chirishda xatolik yuz berdi.");
+    }
+  };
+  
   const handleRemoveFromCart = async (productId) => {
     try {
       const response = await fetch("https://api.fruteacorp.uz/cart/remove", {
@@ -88,10 +110,21 @@ function Cart() {
   const totalItems = cartItems.reduce((sum, item) => sum + item.quantity, 0);
 
   return (
+    <>
+    <Nav/>
+    <NavTop/>
     <div className="container">
-      <h2 className="text-[20px] font-semibold my-4">Savatingiz</h2>
+    <h2 className="mt-16 text-[24px] font-semibold my-4">
+  Savatingiz, <span className="text-[#7E818C]">{totalItems} mahsulot</span>
+</h2>
+
       {loading ? (
-        <p>Yuklanmoqda...</p>
+      
+            <div className="flex items-center justify-center h-[80vh]">
+              <div className="w-12 h-12 border-4 border-green-400 border-t-transparent rounded-full animate-spin"></div>
+            </div>
+        
+  
       ) : cartItems.length > 0 ? (
         <div className="flex w-full justify-between flex-wrap gap-5 md:flex-nowrap md:gap-0 ">
           <div className="w-full border border-green-300 rounded-md p-5">
@@ -157,9 +190,7 @@ function Cart() {
 
                     <div className="flex flex-col justify-between h-40 max-[768px]:justify-end  max-[768px]:absolute  right-[-15px] ">
                       <button
-                        onClick={() =>
-                          handleRemoveFromCart(item.productId, item.quantity)
-                        }
+                        onClick={() => handleRemoveAllFromCart(item.productId)}
                         className="text-[black] px-3 py-1 rounded flex items-center gap-2 hover:text-red-600"
                       >
                         <CiTrash className="text-xl" />{" "}
@@ -172,7 +203,7 @@ function Cart() {
               })}
             </ul>
           </div>
-          <div className="flex flex-col justify-around w-[400px] max-h-[270px] border border-green-300 rounded-md p-5 ml-5">
+          <div className="flex flex-col justify-around w-[460px] max-h-[270px] border border-green-300 rounded-md p-5 ml-5">
             <p>Buyurtmangiz</p>
             <div className="flex justify-between">
               <h4 className="flex gap-1">
@@ -193,15 +224,26 @@ function Cart() {
             </div>
             <button className="w-full text-white bg-[#16A24A] rounded-md p-2">
               Rasmiylashtirishga o'tish
+            
             </button>
           </div>
         </div>
       ) : (
-        <p>Savatcha bo'sh.</p>
+        <div className=" text-center mx-auto mt-12">
+        <img className=" text-center mx-auto" src={NoData} width={300} alt="" />
+        <div className="flex flex-col gap-3">
+        <h2 className=" text-2xl font-medium">Savatda hozircha mahsulot yo'q</h2>
+        <p className=" text-sm">Bosh sahifadagi to'plamlardan boshlang yoki kerakli mahsulotni qidiruv orqali toping</p>
+       <Link to={'/'}>
+       <button className=" w-28 h-9 bg-[#16A34A] text-white rounded-md">Bosh sahifa</button>
+       </Link>
+        </div>
+        </div>
       )}
     </div>
+    </>
   );
->>>>>>> Stashed changes
+
 }
 
 export default Cart
