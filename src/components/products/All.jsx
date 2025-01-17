@@ -1,68 +1,142 @@
+/* eslint-disable react/display-name */
 /* eslint-disable react/prop-types */
-import { BsBagPlus } from "react-icons/bs"
-import { FaStar } from "react-icons/fa"
-import { GiSelfLove } from "react-icons/gi"
+/* eslint-disable no-unused-vars */
+/* eslint-disable react/no-unescaped-entities */
+import { BsBagPlus } from 'react-icons/bs'
+import { FaStar } from 'react-icons/fa'
+import { GiSelfLove } from 'react-icons/gi'
+import React, { useState, useEffect } from 'react'
 
-function All({data, getLocalizedTitle}) {
-    const handleClick = (id, type) => {
-        if (type === "love") {
-          console.log("Love ID:", id);
-        } else if (type === "add") {
-          console.log("Add ID:", id);
-        }
-      };
-  return (
-    <div>
-       <div className="grid grid-cols-2 sm:grid-cols-3 xl:grid-cols-5 md:grid-cols-4 gap-y-4 gap-x-4 mb-10">
-              {data?.data?.map((item, i) => (
-                <article
-                  className="relative rounded-[20px] overflow-hidden pb-4 border border-green-400 shadow-sm hover:shadow-lg hover:shadow-green-400 transition-all duration-300 ease-in-out"
-                  key={i}
-                >
-                  <div className="absolute top-4 right-4 cursor-pointer active:scale-110 text-[20px] z-20">
-                    <span onClick={() => handleClick(item.id, "love")}>
-                      <GiSelfLove />
-                    </span>
-                  </div>
-                  {item?.images?.map((imageItem, key) => (
-                    <a href="/" className="select-none bg-[#efefef]" key={key}>
-                      <div className="mb-2 bg-[#efefef]">
-                        <img
-                          className="w-full object-contain aspect-[4/5.25] max-h-[350px] block"
-                          src={`https://api.fruteacorp.uz/images/${imageItem.image.name}`}
-                          alt="img"
-                        />
-                      </div>
-                      <div className="px-2 text-gray-800 font-inter flex flex-col justify-between h-[100px] ss:h-[120px]">
-                        <div>
-                          <h4 className="text-[12.8px] max-h-[43px] overflow-hidden mb-1">
-                            <div className="overflow-hidden text-ellipsis leading-4">
-                            {getLocalizedTitle(item)}
-                            </div>
-                          </h4>
-                          <p className="text-[11.2px] flex items-center gap-x-1 text-gray-500">
-                        <span className="text-[#ffb54c]">
-                          <FaStar />
-                        </span>
-                        5 ({item.discountAmount} sharhlar)
-                      </p>
-                        </div>
-                        <div className="flex justify-between items-end gap-x-5">
-                          <div className="text-[12px] ms:text-[14px] ss:text-[16px]">
-                          <p>{item.amount} som</p>
-                          </div>
-                        </div>
-                      </div>
-                      <button className="absolute bottom-4 right-2 cursor-pointer text-[20px] w-[32px] h-[32px] flex items-center justify-center border border-custom-green-400 rounded-full hover:bg-[#e5e7eb]">
-                        <BsBagPlus />
-                      </button>
-                    </a>
-                  ))}
-                </article>
-              ))}
-            </div>
-    </div>
-  )
-}
+const All = React.memo(({ data, getLocalizedTitle, fetchWishlist }) => {
+	const [loading, setLoading] = useState(false)
+	const [likedProducts, setLikedProducts] = useState([]) // Liked product IDs
+
+	useEffect(() => {
+		// Wishlistni qayta yuklash
+		fetchWishlist
+	}, [likedProducts, fetchWishlist])
+
+	const handleClick = async (id, type) => {
+		if (type === 'love') {
+			console.log('Love ID:', id)
+
+			const token = localStorage.getItem('accessToken')
+
+			try {
+				const response = await fetch('https://api.fruteacorp.uz/wishlist', {
+					method: 'POST',
+					headers: {
+						'Content-Type': 'application/json',
+						Authorization: `Bearer ${token}`,
+					},
+					body: JSON.stringify({
+						productId: id,
+					}),
+				})
+
+				if (!response.ok) {
+					throw new Error('Failed to add to wishlist')
+				}
+
+				// Yurak tugmasining rangini yangilash
+				setLikedProducts(
+					prevLiked =>
+						prevLiked.includes(id)
+							? prevLiked.filter(likedId => likedId !== id) // O'chirish
+							: [...prevLiked, id] // Qo'shish
+				)
+
+				console.log('Successfully added to wishlist')
+			} catch (error) {
+				console.error('Error:', error)
+			}
+		}
+	}
+
+	const addToCart = async productId => {
+		setLoading(true)
+		const token = localStorage.getItem('accessToken')
+		if (!token) {
+			console.error('Token not found. Please log in.')
+			return
+		}
+
+		try {
+			const response = await fetch('https://api.fruteacorp.uz/cart/add', {
+				method: 'POST',
+				headers: {
+					'Content-Type': 'application/json',
+					Authorization: `Bearer ${token}`,
+				},
+				body: JSON.stringify({ productId, count: 1 }),
+			})
+
+			if (!response.ok) {
+				const errorData = await response.json()
+				console.error(`Error: ${errorData.message}`)
+				return
+			}
+
+			console.log('Product successfully added to cart.')
+		} catch (error) {
+			console.error('Error adding product to cart:', error)
+		} finally {
+			setLoading(false)
+		}
+	}
+
+	return (
+		<div className='grid grid-cols-2 sm:grid-cols-3 xl:grid-cols-5 md:grid-cols-4 gap-x-3 gap-y-10 mb-5 sm:gap-x-5'>
+			{data?.data?.map(product => {
+				const imageUrl = product?.images?.[0]?.image?.name
+					? `https://api.fruteacorp.uz/images/${product.images[0].image.name}`
+					: 'https://via.placeholder.com/150'
+
+				const isLiked = likedProducts.includes(product.id)
+
+				return (
+					<div
+						key={product.id}
+						className='max-w-[400px] relative border border-green-300 hover:shadow-[0px_0px_13px_rgba(72,239,128,0.5)] overflow-hidden rounded-[20px] flex flex-col pb-4'
+					>
+						<div className='relative bg-[#EFEFEF]'>
+							<img
+								src={imageUrl}
+								alt={getLocalizedTitle(product)}
+								className='w-full max-h-[200px] block object-contain rounded mb-2 sm:max-h-[350px]'
+							/>
+							<button
+								className='absolute right-1 text-xl sm:text-2xl sm:right-3 top-4'
+								onClick={() => handleClick(product.id, 'love')}
+							>
+								<GiSelfLove style={{ color: isLiked ? 'red' : 'gray' }} />
+							</button>
+						</div>
+						<div className='p-3'>
+							<h3 className='text-[#1F2026] text-[10px] sm:text-[12.8px] h-16 font-semibold mb-1 text-left'>
+								{getLocalizedTitle(product)}
+								<div className='flex items-center gap-1 mt-1'>
+									<FaStar style={{ color: '#FFB54C' }} />
+									<h4 className='text-[#7E818C]'>5 (0 sharhlar)</h4>
+								</div>
+							</h3>
+							<div className='flex items-center gap-3 justify-between'>
+								<p className='text-[#1F2026] text-[10px] sm:text-[15px]'>
+									Narxi: {product?.amount || 0} so'm
+								</p>
+								<button
+									className='px-3 py-3 rounded-[50px] border'
+									onClick={() => addToCart(product.id)}
+								>
+									<BsBagPlus />
+								</button>
+							</div>
+						</div>
+					</div>
+				)
+			})}
+		</div>
+	)
+})
 
 export default All
