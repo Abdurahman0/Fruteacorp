@@ -1,6 +1,7 @@
 import Home from '../components/Home'
 import img1 from '../about-imgs/about1.jpg'
 import img2 from '../about-imgs/about2.jpg'
+import Contact from './contact'
 
 
 function About() {
@@ -75,6 +76,7 @@ function About() {
 
 			</div>
 			<Home />
+			<Contact/>
 		</div>
 	)
 }
