@@ -17,6 +17,7 @@ import NavTop from "./nav/NavTop";
 import cormimg from "../assets/img/Untitled.png";
 import useStore from "../store/teaStore";
 import All from "./products/All";
+// import Last from "./products/Last";
 
 
 function MainComponent() {
@@ -24,6 +25,7 @@ function MainComponent() {
   const [data, setData] = useState([]);
   const [baner, setBaner] = useState(null);
   const [mostSold, setMostSold] = useState(null);
+  const [last, setLastdata] = useState(null);
   const [limit, setLimit] = useState(5);
   const [loading, setLoading] = useState(false);
   const [hasmore, setHasmore] = useState(true)
@@ -70,6 +72,20 @@ function MainComponent() {
       })
       .finally(() => setLoading(false));
   };
+  useEffect(()=> {
+    fetch(`https://api.fruteacorp.uz/products?page=1&limit=20`, {
+      method: "GET",
+      headers: { "Content-Type": "application/json" },
+    })
+      .then((res) => res.json())
+      .then((elem) => {
+        setLastdata(elem);
+      })
+      .catch((err) => {
+        console.error("Error fetching data:", err);
+      })
+      .finally(() => setLoading(false));
+  },[])
 
   useEffect(() => {
     fetch(`https://api.fruteacorp.uz/products/most-sold`, {
@@ -304,8 +320,7 @@ function MainComponent() {
               ))}
             </Swiper>
           </section>
-
-          <section className="mb-10">
+          <section className="my-10">
             <h2 className="text-[20px] md:text-[24px] xl:text-[28px] capitalize font-semibold font-inter mb-5">
               Barcha mahsulotlar
             </h2>
@@ -320,55 +335,57 @@ function MainComponent() {
                 640: { slidesPerView: 2 },
                 768: { slidesPerView: 3 },
                 1024: { slidesPerView: 4 },
-                1280: { slidesPerView: 5 },}}
+                1280: { slidesPerView: 5 },
+              }}
               className="w-full h-[100%]">
-              {data?.data?.slice()?.reverse()?.map((item, index) => (
-                  <SwiperSlide
-                    key={index}
-                    className="relative rounded-[20px] overflow-hidden pb-4 my-[20px] border border-green-400 hover:shadow[0px_0px_2px_red]
-                  hover:shadow-[0px_0px_13px_rgba(72,239,128,0.5)] text-ellipsis leading-4 flex flex-col"
-                  >
-                    {item?.images?.map((imageItem, key) => (
-                      <a
-                        href="/"
-                        className="select-none bg-[#efefef]"
-                        key={key}>
-                        <div className="mb-2 bg-[#efefef]">
-                          <img
-                            className="w-full object-contain border aspect-[4/5.25] max-h-[350px] block rounded-t-lg"
-                            src={`https://api.fruteacorp.uz/images/${imageItem.image.name}`}
-                            alt="img"
-                          />
-                        </div>
-                      </a>
-                    ))}
-                    <div className="px-2 text-gray-800 font-inter flex flex-col justify-between h-[100px] ss:h-[120px]">
-                      <div>
-                        <h4 className="text-[12.8px] max-h-[43px] overflow-hidden mb-1">
-                          <div className="overflow-hidden text-ellipsis leading-4">
-                            {getLocalizedTitle(item)}
-                          </div>
-                        </h4>
-                        <p className="text-[11.2px] flex items-center gap-x-1 text-gray-500">
-                          <span className="text-[#ffb54c]">
-                            <FaStar />
-                          </span>
-                          5 ({item.discountAmount} sharhlar)
-                        </p>
-                      </div>
-                      <div className="flex justify-between items-end gap-x-5">
-                        <div className="text-[12px] pb-[10px] ms:text-[14px] ss:text-[16px]">
-                          <p>{item.amount} som</p>
-                        </div>
-                      </div>
-                    </div>
-                    <button className="absolute bottom-4 right-2 cursor-pointer text-[20px] w-[32px] h-[32px] flex items-center justify-center border border-custom-green-400 rounded-full transition-all duration-300 ease-in-out hover:bg-[#e5e7eb]">
-                      <BsBagPlus />
-                    </button>
-                  </SwiperSlide>
-                ))}
+{last?.data?.slice()?.reverse()?.map((item, index) => (
+  <SwiperSlide
+    key={index}
+    className="relative rounded-[20px] overflow-hidden pb-4 my-[20px] border border-green-400 hover:shadow[0px_0px_2px_red]
+  hover:shadow-[0px_0px_13px_rgba(72,239,128,0.5)] text-ellipsis leading-4 flex flex-col"
+  >
+    {item?.images?.map((imageItem, key) => (
+      <a
+        href="/"
+        className="select-none bg-[#efefef]"
+        key={key}>
+        <div className="mb-2 bg-[#efefef]">
+          <img
+            className="w-full object-contain border aspect-[4/5.25] max-h-[350px] block rounded-t-lg"
+            src={`https://api.fruteacorp.uz/images/${imageItem.image.name}`}
+            alt="img"
+          />
+        </div>
+      </a>
+    ))}
+    <div className="px-2 text-gray-800 font-inter flex flex-col justify-between h-[100px] ss:h-[120px]">
+      <div>
+        <h4 className="text-[12.8px] max-h-[43px] overflow-hidden mb-1">
+          <div className="overflow-hidden text-ellipsis leading-4">
+            {getLocalizedTitle(item)}
+          </div>
+        </h4>
+        <p className="text-[11.2px] flex items-center gap-x-1 text-gray-500">
+          <span className="text-[#ffb54c]">
+            <FaStar />
+          </span>
+          5 ({item.discountAmount} sharhlar)
+        </p>
+      </div>
+      <div className="flex justify-between items-end gap-x-5">
+        <div className="text-[12px] pb-[10px] ms:text-[14px] ss:text-[16px]">
+          <p>{item.amount} som</p>
+        </div>
+      </div>
+    </div>
+    <button className="absolute bottom-4 right-2 cursor-pointer text-[20px] w-[32px] h-[32px] flex items-center justify-center border border-custom-green-400 rounded-full transition-all duration-300 ease-in-out hover:bg-[#e5e7eb]">
+      <BsBagPlus />
+    </button>
+  </SwiperSlide>
+))}
             </Swiper>
           </section>
+
         </div>
       </main>
     </>
@@ -376,3 +393,7 @@ function MainComponent() {
 }
 
 export default MainComponent;
+
+
+
+
