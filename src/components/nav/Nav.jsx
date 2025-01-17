@@ -9,9 +9,7 @@ function Nav() {
       ];
       const flags = (i) => {
         setLanguage(i)
-      };
-      // console.log(languagee);
-      
+      };      
 
   return (
     <div>

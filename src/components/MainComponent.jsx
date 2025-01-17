@@ -1,4 +1,3 @@
-/* eslint-disable no-undef */
 /* eslint-disable react-hooks/exhaustive-deps */
 import { useEffect, useState } from "react";
 import logo from "../assets/img/logo.png";
@@ -19,19 +18,20 @@ import cormimg from "../assets/img/Untitled.png";
 import useStore from "../store/teaStore";
 import All from "./products/All";
 
+
 function MainComponent() {
   const [activeIndex, setActiveIndex] = useState(null);
-  const [data, setData] = useState(null);
+  const [data, setData] = useState([]);
   const [baner, setBaner] = useState(null);
   const [mostSold, setMostSold] = useState(null);
-  const [limit, setLimit] = useState(10);
+  const [limit, setLimit] = useState(5);
   const [loading, setLoading] = useState(false);
-  const { languagee } = useStore();
+  const [hasmore, setHasmore] = useState(true)
+  const { languagee, setLanguage } = useStore();
 
   const flags = (i) => {
-    console.log(i);
+    setLanguage(i)
   };
-
   const getLocalizedTitle = (item) => {
     if (languagee === "uz") return item.title_uz;
     if (languagee === "ru") return item.title_ru;
@@ -60,6 +60,9 @@ function MainComponent() {
     })
       .then((res) => res.json())
       .then((elem) => {
+        if(elem?.data?.length < limit){
+          setHasmore(false)
+        }
         setData(elem);
       })
       .catch((err) => {
@@ -75,11 +78,11 @@ function MainComponent() {
     })
       .then((res) => res.json())
       .then((elem) => {
-        setMostSold(elem?.data || []); // Ensure fallback to empty array
+        setMostSold(elem?.data || []);
       })
       .catch((err) => {
         console.error("Error fetching most sold products:", err);
-        setMostSold([]); // Handle errors gracefully
+        setMostSold([]); 
       });
   }, []);
 
@@ -93,9 +96,7 @@ function MainComponent() {
   }, []);
 
   const handleLimitChange = () => {
-    if (limit !== 50) {
-      setLimit(50); // Limitni 50 ga o'rnatish
-    }
+    setLimit((prevLimit) => prevLimit + 5);
   };
 
   useEffect(() => {
@@ -122,8 +123,7 @@ function MainComponent() {
                           activeIndex === index
                             ? "text-custom-green-600"
                             : "text-[#7e818c]"
-                        }`}
-                      >
+                        }`}>
                         {item.icon}
                         <span>{item.label}</span>
                       </button>
@@ -135,8 +135,7 @@ function MainComponent() {
                           activeIndex === index
                             ? "text-custom-green-600"
                             : "text-[#7e818c]"
-                        }`}
-                      >
+                        }`}>
                         {item.icon}
                         <span>{item.label}</span>
                       </a>
@@ -158,8 +157,7 @@ function MainComponent() {
                     <span
                       key={lang.code}
                       className="w-6 h-6 flex justify-center cursor-pointer"
-                      onClick={() => flags(lang.code)}
-                    >
+                      onClick={() => flags(lang.code)}>
                       {lang.flag}
                     </span>
                   ))}
@@ -193,8 +191,7 @@ function MainComponent() {
               autoplay={{ delay: 3000, disableOnInteraction: false }}
               loop
               spaceBetween={20}
-              slidesPerView={1}
-            >
+              slidesPerView={1}>
               {baner?.map((item, index) => (
                 <SwiperSlide className="border rounded-[20px]" key={index}>
                   <img
@@ -213,12 +210,11 @@ function MainComponent() {
             </h2>
             <All data={data} getLocalizedTitle={getLocalizedTitle} />
 
-            {limit !== 50 && !loading && (
+            {hasmore && !loading && (
               <div className="flex justify-center">
                 <button
                   onClick={handleLimitChange}
-                  className="rounded-[8px] text-gray-800 font-inter font-semibold py-[7px] px-[40px] transition-all duration-[350ms] ease-[cubic-bezier(0.4,_0,_0.2,_1)] bg-green-400 hover:bg-green-600 hover:text-white transform hover:scale-105"
-                >
+                  className="rounded-[8px] text-gray-800 font-inter font-semibold py-[7px] px-[40px] transition-all duration-[350ms] ease-[cubic-bezier(0.4,_0,_0.2,_1)] bg-green-400 hover:bg-green-600 hover:text-white transform hover:scale-105">
                   Load More
                 </button>
               </div>
@@ -227,19 +223,25 @@ function MainComponent() {
               <div className="flex justify-center">
                 <button
                   disabled
-                  className="rounded-[8px] text-gray-800 font-inter font-semibold py-[7px] px-[40px] transition-all duration-[350ms] ease-[cubic-bezier(0.4,_0,_0.2,_1)] bg-gray-400 cursor-not-allowed"
-                >
+                  className="rounded-[8px] text-gray-800 font-inter font-semibold py-[7px] px-[40px] transition-all duration-[350ms] ease-[cubic-bezier(0.4,_0,_0.2,_1)] bg-gray-400 cursor-not-allowed">
                   Loading...
                 </button>
               </div>
             )}
+            {
+              !hasmore &&(
+                <div className="flex justify-center mt-4">
+                  <p className="text-gray-600 font-medium">All products have been</p>
+                </div>
+              )
+            }
           </section>
 
           <img
             className="border rounded-[20px] border-green-400 hover:shadow-lg  hover:shadow-green-400 transition-all duration-300 ease-in-out"
             src={cormimg}
             alt=""
-          />
+/>
 
           <section className="my-10">
             <h2 className="text-[20px] md:text-[24px] xl:text-[28px] capitalize font-semibold font-inter mb-5">
@@ -258,13 +260,12 @@ function MainComponent() {
                 1024: { slidesPerView: 4 },
                 1280: { slidesPerView: 5 },
               }}
-              className="w-full h-[100%]"
-            >
+              className="w-full h-[100%]">
               {mostSold?.map((item, index) => (
                 <SwiperSlide
                   key={index}
-                  className="relative rounded-[20px] overflow-hidden pb-4 my-[20px] border border-green-400 shadow-sm hover:shadow-lg hover:shadow-green-400 transition-all duration-300 ease-in-out"
-                >
+                  className="relative rounded-[20px] overflow-hidden pb-4 my-[20px] border border-green-400 hover:shadow[0px_0px_2px_red]
+                  hover:shadow-[0px_0px_13px_rgba(72,239,128,0.5)] text-ellipsis leading-4 flex flex-col">
                   {item?.images?.map((imageItem, key) => (
                     <a href="/" className="select-none bg-[#efefef]" key={key}>
                       <div className="mb-2 bg-[#efefef]">
@@ -319,24 +320,19 @@ function MainComponent() {
                 640: { slidesPerView: 2 },
                 768: { slidesPerView: 3 },
                 1024: { slidesPerView: 4 },
-                1280: { slidesPerView: 5 },
-              }}
-              className="w-full h-[100%]"
-            >
-              {data?.data
-                .slice()
-                .reverse()
-                .map((item, index) => (
+                1280: { slidesPerView: 5 },}}
+              className="w-full h-[100%]">
+              {data?.data?.slice()?.reverse()?.map((item, index) => (
                   <SwiperSlide
                     key={index}
-                    className="relative rounded-[20px] overflow-hidden pb-4 border my-[20px] border-green-400 shadow-sm transition-all duration-300 ease-in-out hover:shadow-lg hover:shadow-green-400 hover:scale-105"
+                    className="relative rounded-[20px] overflow-hidden pb-4 my-[20px] border border-green-400 hover:shadow[0px_0px_2px_red]
+                  hover:shadow-[0px_0px_13px_rgba(72,239,128,0.5)] text-ellipsis leading-4 flex flex-col"
                   >
                     {item?.images?.map((imageItem, key) => (
                       <a
                         href="/"
                         className="select-none bg-[#efefef]"
-                        key={key}
-                      >
+                        key={key}>
                         <div className="mb-2 bg-[#efefef]">
                           <img
                             className="w-full object-contain border aspect-[4/5.25] max-h-[350px] block rounded-t-lg"
