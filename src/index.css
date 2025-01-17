@@ -6,3 +6,18 @@
     padding: 0 20px;
     margin: 0 auto;
 }
+.swiper {
+    position: relative; /* Tugmalarni to'g'ri joylashtirish uchun */
+  }
+  
+  .swiper-button-next,
+  .swiper-button-prev {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+  }
+  
+.swiper-button-next,
+.swiper-button-prev {
+  z-index: 10; /* Tugmalar boshqa elementlardan yuqorida bo'lishi uchun */
+}
