@@ -1,4 +1,5 @@
 /* eslint-disable react-hooks/exhaustive-deps */
+
 import { useEffect, useState } from 'react'
 import logo from '../assets/img/logo.png'
 import { FiSearch } from 'react-icons/fi'
@@ -17,6 +18,28 @@ import NavTop from './nav/NavTop'
 import cormimg from '../assets/img/Untitled.png'
 import useStore from '../store/teaStore'
 import All from './products/All'
+import Footer from './Footer'
+
+// import { useEffect, useState } from "react";
+// import logo from "../assets/img/logo.png";
+// import { FiSearch } from "react-icons/fi";
+// import { GiSelfLove } from "react-icons/gi";
+// import { BsBagPlus } from "react-icons/bs";
+// import { IoIosSearch } from "react-icons/io";
+// import { FaRegUser, FaStar } from "react-icons/fa";
+// import "swiper/css";
+// import "swiper/css/navigation";
+// import "swiper/css/pagination";
+// import "swiper/css/autoplay";
+// import { Swiper, SwiperSlide } from "swiper/react";
+// import { Navigation, Pagination, Autoplay } from "swiper/modules";
+// import Nav from "./nav/Nav";
+// import NavTop from "./nav/NavTop";
+// import cormimg from "../assets/img/Untitled.png";
+// import useStore from "../store/teaStore";
+// import All from "./products/All";
+// import Footer from "./Footer";
+
 // import Last from "./products/Last";
 
 function MainComponent() {
@@ -280,6 +303,7 @@ function MainComponent() {
 						alt=''
 					/>
 
+
 					<section className='my-10'>
 						<h2 className='text-[20px] md:text-[24px] xl:text-[28px] capitalize font-semibold font-inter mb-5'>
 							Mashhur
@@ -415,8 +439,17 @@ function MainComponent() {
 					</section>
 				</div>
 			</main>
+			<footer>
+        <Footer/>
+      </footer>
+  
+  
 		</>
 	)
+        
+     
+    
+
 }
 
 export default MainComponent
