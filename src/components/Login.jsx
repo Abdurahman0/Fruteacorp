@@ -10,6 +10,7 @@ function Login() {
 		phone: '+998',
 		password: '',
 	})
+	
 
 	const [isAuthenticated, setIsAuthenticated] = useState(false) // Tracks authentication status
 
@@ -20,6 +21,7 @@ function Login() {
 	}, [])
 
 	// Handles input changes
+	
 	const handleChange = e => {
 		const { id, value } = e.target
 		setFormData(prev => ({
