@@ -10,6 +10,7 @@ function Login() {
 		phone: '+998',
 		password: '',
 	})
+	
 
 	const [isAuthenticated, setIsAuthenticated] = useState(false) // Tracks authentication status
 
