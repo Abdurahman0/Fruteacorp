@@ -17,6 +17,7 @@ import NavTop from "./nav/NavTop";
 import cormimg from "../assets/img/Untitled.png";
 import useStore from "../store/teaStore";
 import All from "./products/All";
+import Footer from "./Footer";
 // import Last from "./products/Last";
 
 
@@ -388,6 +389,9 @@ function MainComponent() {
 
         </div>
       </main>
+      <footer>
+        <Footer/>
+      </footer>
     </>
   );
 }
