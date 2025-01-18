@@ -1,8 +1,10 @@
 /* eslint-disable react/no-unescaped-entities */
 import { useState, useEffect } from 'react'
+import { useNavigate } from 'react-router-dom'
 import { toast } from 'react-toastify'
 
 function Login() {
+	const navigate = useNavigate()
 	const [view, setView] = useState('login') // Tracks the current view: 'login', 'signup', 'forgot'
 	const [formData, setFormData] = useState({
 		firstName: '',
@@ -83,7 +85,7 @@ function Login() {
 					</h2>
 					<button
 						className='text-lg font-semibold bg-gray-200 p-2 rounded-full hover:bg-gray-300'
-						onClick={() => setView('login')} // Close and return to login
+						onClick={() => navigate('/')} // Close and return to login
 					>
 						x
 					</button>
