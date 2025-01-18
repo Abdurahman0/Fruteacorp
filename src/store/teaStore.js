@@ -1,14 +1,15 @@
 import { create } from 'zustand'
 
 const useStore = create(set => ({
-	// Sidebar state
-	isSidebarActive: true, // Default value
+	isSidebarActive: true, 
 	toggleSidebar: () =>
 		set(state => ({ isSidebarActive: !state.isSidebarActive })),
 
-	// Example: Other global states
 	user: null,
 	setUser: user => set({ user }),
+	languagee: "uz",
+	setLanguage: (i) => set({ languagee: i }),
+
 }))
 
 export default useStore
