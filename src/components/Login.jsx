@@ -2,6 +2,7 @@
 import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { toast } from 'react-toastify'
+import useStore from '../store/teaStore' // Import Zustand store
 
 function Login() {
 	const navigate = useNavigate()
@@ -14,6 +15,7 @@ function Login() {
 	})
 
 	const [isAuthenticated, setIsAuthenticated] = useState(false) // Tracks authentication status
+	const setUser = useStore(state => state.setUser) // Zustand store function
 
 	useEffect(() => {
 		// Check if the accessToken exists in localStorage
@@ -51,11 +53,27 @@ function Login() {
 			if (response.ok) {
 				const AccessToken = result.data.accessToken.token
 				const RefreshToken = result.data.refreshToken.token
+
 				if (AccessToken && RefreshToken) {
+					// Save tokens to localStorage
 					localStorage.setItem('accessToken', AccessToken)
 					localStorage.setItem('refreshToken', RefreshToken)
+
+					// Save user data to Zustand state
+					setUser({
+						auth: true,
+						user: {
+							data: result.data,
+							success: true,
+							token: AccessToken,
+							refreshToken: RefreshToken,
+						},
+						version: 0,
+					})
+
 					setIsAuthenticated(true) // Update state to hide the component
 					toast('Request successful!')
+					navigate('/') // Navigate to the main page
 				} else {
 					toast('No token received')
 				}
